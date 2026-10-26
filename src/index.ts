@@ -1,10 +1,10 @@
 import { resolveFeedbackUrl, type FeedbackTarget } from './endpoint.js';
 import { describeOutcome, sendFeedback, type FeedbackPayload } from './send.js';
-import { CORE_UA } from './version.js';
+import { SDK_UA } from './version.js';
 
 export { DOCS_DOMAIN, resolveFeedbackUrl, type Endpoint, type EndpointError, type FeedbackTarget } from './endpoint.js';
 export { describeOutcome, sendFeedback, type FeedbackPayload, type SendResult } from './send.js';
-export { CORE_UA, CORE_VERSION } from './version.js';
+export { SDK_UA, SDK_VERSION } from './version.js';
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -46,7 +46,7 @@ async function submit(opts: SubmitOptions): Promise<SubmitResult> {
   if (email && !isEmail(email)) return { ok: false, line: `"${email}" doesn't look like an email address.`, status: 0 };
 
   // The server labels the note from the FIRST name/version token, so the host CLI goes first.
-  const userAgent = [opts.client?.trim(), CORE_UA].filter(Boolean).join(' ');
+  const userAgent = [opts.client?.trim(), SDK_UA].filter(Boolean).join(' ');
   const result = await sendFeedback(
     endpoint.url,
     { message, context: opts.context?.trim(), email, requestIds: opts.requestIds },

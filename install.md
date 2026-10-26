@@ -1,6 +1,6 @@
-# Adding a `feedback` command with @restlessai/cli-feedback
+# Adding a `feedback` command with @restlessai/cli-sdk
 
-These are instructions for a coding agent wiring a `feedback` command into a Node CLI that does not use oclif (a hand-rolled dispatcher, Commander, yargs, citty, cac, or anything else). For oclif, install `@restlessai/oclif-plugin-feedback` instead and stop here.
+These are instructions for a coding agent wiring a `feedback` command into a Node CLI that does not use oclif (a hand-rolled dispatcher, Commander, yargs, citty, cac, or anything else). For an oclif CLI, don't write a command: register this same package as an oclif plugin instead, as its README describes, and stop here.
 
 The command lets the CLI's users, and the agents driving it, send a short note to the API's maintainers. It must feel like every other command in this CLI.
 
@@ -8,7 +8,7 @@ The command lets the CLI's users, and the agents driving it, send a short note t
 
 - **The Restless project slug.** The person asking you to do this should have given it to you. If they didn't, ask. Don't guess one, and don't read it from `.env*` files.
 - **How commands are registered.** Find where the CLI maps a command name to its handler, how flags are parsed, how help text is generated, and how other commands print output and set exit codes. Copy those patterns.
-- **The module system.** This package is ESM only. In an ESM CLI, use a static `import`. In a CommonJS CLI, load it with `await import('@restlessai/cli-feedback')` inside the handler. Don't convert the CLI to ESM for this.
+- **The module system.** This package is ESM only. In an ESM CLI, use a static `import`. In a CommonJS CLI, load it with `await import('@restlessai/cli-sdk')` inside the handler. Don't convert the CLI to ESM for this.
 - **The Node version floor.** The package needs Node 18 or later (it uses the global `fetch`). If the CLI supports older versions, tell the person rather than raising the floor yourself.
 
 Never read `.env*` files or anything in `node_modules/` other than this file.
@@ -18,7 +18,7 @@ Never read `.env*` files or anything in `node_modules/` other than this file.
 Use the CLI's own package manager, as a runtime dependency:
 
 ```sh
-npm install @restlessai/cli-feedback
+npm install @restlessai/cli-sdk
 ```
 
 ## 3. Add the command
@@ -26,7 +26,7 @@ npm install @restlessai/cli-feedback
 Call `submitFeedback` once. It resolves the endpoint, validates the input, sends the note, and returns a line to print. It never throws.
 
 ```js
-import { submitFeedback } from '@restlessai/cli-feedback';
+import { submitFeedback } from '@restlessai/cli-sdk';
 
 const result = await submitFeedback({
   project: 'your-project-slug',   // the slug from step 1, as a constant in the CLI's source

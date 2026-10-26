@@ -1,9 +1,7 @@
 import { createInterface } from 'node:readline/promises';
 import { Command, Flags } from '@oclif/core';
 
-import { CORE_UA, describeOutcome, isEmail, resolveFeedbackUrl, sendFeedback, type FeedbackTarget } from '@restlessai/cli-feedback';
-
-import { PLUGIN_UA } from '../lib/version.js';
+import { SDK_UA, describeOutcome, isEmail, resolveFeedbackUrl, sendFeedback, type FeedbackTarget } from '../index.js';
 
 export default class Feedback extends Command {
   static override summary = "Tell this API's maintainers what confused you.";
@@ -70,7 +68,7 @@ export default class Feedback extends Command {
     const result = await sendFeedback(
       endpoint.url,
       { message, context: flags.context?.trim(), email, requestIds: flags['request-id'] },
-      `${this.config.userAgent} ${PLUGIN_UA} ${CORE_UA}`,
+      `${this.config.userAgent} ${SDK_UA}`,
     );
     const outcome = describeOutcome(result);
     if (!outcome.ok) this.error(outcome.line, { exit: 1 });

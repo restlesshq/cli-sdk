@@ -12,7 +12,7 @@ describe('submitFeedback', () => {
     const [url, init] = f.mock.calls[0] as unknown as [string, RequestInit];
     expect(url).toBe('https://pets.restlessdocs.com/feedback');
     expect(JSON.parse(init.body as string)).toEqual({ message: 'hi' });
-    expect((init.headers as Record<string, string>)['user-agent']).toMatch(/^petcli\/2\.3\.0 restless-cli-feedback\//);
+    expect((init.headers as Record<string, string>)['user-agent']).toMatch(/^petcli\/2\.3\.0 restless-cli-sdk\//);
   });
 
   it('refuses without sending: no project, an empty message, a bad email', async () => {
