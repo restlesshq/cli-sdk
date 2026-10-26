@@ -1,0 +1,12 @@
+{
+  "name": "restless-cli-plugins",
+  "private": true,
+  "workspaces": [
+    "core",
+    "oclif"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "test": "npm run build -w core && npm test --workspaces"
+  }
+}
