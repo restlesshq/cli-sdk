@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { Config } from '@oclif/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import Feedback from '../src/commands/feedback.js';
+import Feedback from '../src/oclif/feedback.js';
 
 // A stand-in host CLI: only its package.json matters to the command.
 function hostCli(pjson: Record<string, unknown>): string {
@@ -37,7 +37,7 @@ describe('feedback command', () => {
     expect(JSON.parse(init.body as string)).toEqual({ message: 'the --since flag ignores timezones' });
     const ua = (init.headers as Record<string, string>)['user-agent'];
     expect(ua.startsWith('petcli/2.3.0 ')).toBe(true);
-    expect(ua).toContain('restless-oclif-plugin-feedback/');
+    expect(ua).toContain('restless-cli-sdk/');
   });
 
   it('passes request ids and context through', async () => {

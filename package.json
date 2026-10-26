@@ -1,12 +1,60 @@
 {
-  "name": "restless-cli-plugins",
-  "private": true,
-  "workspaces": [
-    "core",
-    "oclif"
+  "name": "@restlessai/cli-sdk",
+  "version": "0.1.0",
+  "description": "Restless for the CLIs API companies ship: a `feedback` command (and more to come), usable from any Node CLI or as an oclif plugin.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "install.md"
   ],
+  "oclif": {
+    "commands": {
+      "strategy": "explicit",
+      "target": "./dist/oclif/commands.js",
+      "identifier": "COMMANDS"
+    }
+  },
   "scripts": {
-    "build": "npm run build --workspaces",
-    "test": "npm run build -w core && npm test --workspaces"
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "test": "npm run build && vitest run",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm test"
+  },
+  "peerDependencies": {
+    "@oclif/core": ">=4"
+  },
+  "peerDependenciesMeta": {
+    "@oclif/core": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@oclif/core": "^5.1.9",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "4.1.2"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "cli",
+    "oclif",
+    "oclif-plugin",
+    "feedback",
+    "restless",
+    "api"
+  ],
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
   }
 }
