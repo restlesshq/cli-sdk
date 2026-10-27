@@ -1,6 +1,6 @@
 {
   "name": "@restlessai/cli-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Restless for the CLIs API companies ship: a `feedback` command (and more to come), usable from any Node CLI or as an oclif plugin.",
   "homepage": "https://github.com/restlesshq/cli-sdk#readme",
   "repository": {
