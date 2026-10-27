@@ -1,0 +1,71 @@
+name: CI
+
+# Tests plus a smoke test of the real npm artifact, on every pull request and on
+# main after merge, since we publish from main.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: test (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # vitest needs 20+; package.json declares engines >=18 for consumers.
+        node: [20, 22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      # npm 10 crashes resolving @oclif/core as both a dev dependency and an optional peer.
+      - run: npx -y npm@11 ci --no-audit --no-fund
+      - run: npm test
+      - run: npm run typecheck
+
+  package:
+    name: package
+    runs-on: ubuntu-latest
+    # A package that builds and tests fine can still ship broken if `files` or `exports`
+    # misses something, so install the packed tarball the way a customer would.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npx -y npm@11 ci --no-audit --no-fund
+      - name: Pack the tarball
+        run: |
+          mkdir -p /tmp/pack
+          npm run build
+          npm pack --pack-destination /tmp/pack
+      - name: Install it into a clean project, without oclif
+        run: |
+          mkdir -p /tmp/consumer && cd /tmp/consumer
+          npm init -y > /dev/null
+          npm install --no-audit --no-fund /tmp/pack/*.tgz
+          test ! -d node_modules/@oclif
+      - name: Import the SDK
+        working-directory: /tmp/consumer
+        run: |
+          node --input-type=module -e "
+            const m = await import('@restlessai/cli-sdk');
+            for (const name of ['submitFeedback', 'sendFeedback', 'resolveFeedbackUrl', 'describeOutcome', 'isEmail']) {
+              if (typeof m[name] !== 'function') throw new Error('missing export ' + name);
+            }
+            const r = await m.submitFeedback({ project: 'pets', message: 'hi', env: {}, fetch: async () => new Response('{}', { status: 201 }) });
+            if (!r.ok) throw new Error('submitFeedback failed: ' + r.line);
+            console.log('ok', m.SDK_UA);
+          "
